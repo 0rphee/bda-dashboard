@@ -1,0 +1,3 @@
+[submodule "proy-bda-frontend"]
+	path = proy-bda-frontend
+	url = git@github.com:0rphee/proy-bda-frontend.git

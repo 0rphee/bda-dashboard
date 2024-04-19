@@ -13,7 +13,7 @@ app.config['CORS_HEADERS'] = 'Content-Type'
 @app.route('/', defaults={'requested_path': 'index.html'})
 @app.route('/<path:requested_path>')
 def index(requested_path):
-    return send_from_directory('build', requested_path)
+    return send_from_directory('proy-bda-frontend/build', requested_path)
 
 
 @app.route('/data')
@@ -30,7 +30,6 @@ def get_data():
     )
 
     cursor = conn.cursor()
-
 
     # ==selectQuery=================================================================
     selectQuery = "SELECT COUNT(customerNumber) FROM customers;"
