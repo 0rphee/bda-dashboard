@@ -23,27 +23,26 @@ def get_data():
     random_support_id = random.randint(1, 1000)
     conn = mysql.connector.connect(
         # host="localhost",
-        # Use the service name as the hostname
+        # Use the docker-compose service name as the hostname
         host="db",  
-        port="8889",
+        port="3306",
         user="root",
         password="root",
-        database="classicmodels"
+        database="steam_db"
     )
 
     cursor = conn.cursor()
 
     # ==selectQuery=================================================================
-    selectQuery = "SELECT COUNT(customerNumber) FROM customers;"
-    cursor.execute(selectQuery)
+    # selectQuery = "SELECT COUNT(developer) FROM steam;"
+    # cursor.execute(selectQuery)
     # ==============================================================================
+    # print("***** element count****", cursor.fetchall())
 
-    print("***** element count****", cursor.fetchall())
-
-    cursor.execute('SELECT contactFirstName, COUNT(contactFirstName) as Count FROM customers GROUP BY contactFirstName ORDER BY Count Desc;')
+    cursor.execute('SELECT developer, COUNT(developer) as Count FROM steam WHERE developer != "" GROUP BY developer ORDER BY Count DESC LIMIT 100;')
     data = cursor.fetchall()
     conn.close()
-    data_dict = {'FirstName': [row[0] for row in data], 'Count': [row[1] for row in data]}
+    data_dict = {'Developer': [row[0] for row in data], 'Count': [row[1] for row in data]}
     print("/data endpoint hit!")
     return jsonify(data_dict)
 

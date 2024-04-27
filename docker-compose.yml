@@ -16,18 +16,23 @@ services:
           path: .
           target: /app
   db:
-    # build:
-    #   context: .
-    #   dockerfile: Dockerfile.mysql
     image: mysql:8.3
     restart: always
     environment:
-      MYSQL_TCP_PORT: 8889
-      MYSQL_DATABASE: classicmodels
+      MYSQL_TCP_PORT: 3306
+      MYSQL_DATABASE: steam_db
       MYSQL_ROOT_PASSWORD: root
       MYSQL_USER: dbuser
       MYSQL_PASSWORD: dbuser
     ports:
-      - "8889:8889"
+      - "3306:3306"
     volumes:
-      - ./mysqlsampledatabase.sql:/docker-entrypoint-initdb.d/mysqlsampledatabase.sql
+      - ./data/steam_db.sql:/docker-entrypoint-initdb.d/steam_db.sql
+
+  phpmyadmin:
+    image: phpmyadmin:5-apache
+    restart: always
+    ports:
+      - "8080:80"
+    # environment: 
+    #   PMA_ARBITRARY: 1
