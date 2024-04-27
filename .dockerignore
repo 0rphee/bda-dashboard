@@ -1,0 +1,17 @@
+# node
+**/node_modules
+**/build
+
+# python
+**/.venv
+
+# others
+LICENSE
+README.md
+mysqlsampledatabase.sql
+.DS_Store
+
+# git
+.git
+.gitignore
+.gitmodules
