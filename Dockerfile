@@ -33,7 +33,9 @@ COPY . ../.
 
 WORKDIR /app
 
-# EXPOSE 8000
+EXPOSE 8000
+
+ENV FLASK_RUN_PORT=8000 FLASK_RUN_HOST=0.0.0.0
 
 # Command to run the application
-CMD [ "python3", "app.py" ]
+CMD [ "flask", "run", "--debug" ]
