@@ -22,7 +22,9 @@ def get_data():
     random_id = random.randint(1, 1000)
     random_support_id = random.randint(1, 1000)
     conn = mysql.connector.connect(
-        host="localhost",
+        # host="localhost",
+        # Use the service name as the hostname
+        host="db",  
         port="8889",
         user="root",
         password="root",
@@ -48,4 +50,4 @@ def get_data():
 
 
 if __name__ == '__main__':
-    app.run(port=8000, debug=True)
+    app.run(host="0.0.0.0", port=8000, debug=True)
