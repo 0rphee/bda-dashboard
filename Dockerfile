@@ -15,7 +15,6 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy Node.js dependencies
-COPY proy-bda-frontend/package-lock.json .
 COPY proy-bda-frontend/package.json .
 
 # Navigate to the frontend directory and install npm dependencies
