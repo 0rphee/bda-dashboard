@@ -1,11 +1,19 @@
 # bda-dashboard
 
 > Se necesita <https://docs.docker.com/get-docker/>.
+> y <https://git-scm.com/downloads>
+
+Primero se clona el proyecto:
+```sh
+git clone https://github.com/0rphee/bda-dashboard.git
+cd bda-dashboard
+```
 
 Antes de correrlo hay que ejecutar:
 
 ```sh
-git submodule init && git submodule update --remote
+git submodule init
+git submodule update --remote
 ```
 
 Y descargar el archivo `steam_db.sql` y colocarlo en `data/`, de <https://drive.usercontent.google.com/download?id=1kR9uIj7tv9BY2RxThL3KElbpb3vQ9Oxg&export=download&authuser=1>
