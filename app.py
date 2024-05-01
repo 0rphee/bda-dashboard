@@ -27,6 +27,7 @@ def exec_query(query: str):
 
 @app.route('/', defaults={'requested_path': 'index.html'})
 @app.route('/<path:requested_path>')
+@cross_origin()
 def index(requested_path):
     return send_from_directory('proy-bda-frontend/build', requested_path)
 
@@ -45,20 +46,10 @@ def get_data():
 def get_data_1():
 
     query = """
-        WITH TotalJuegos AS (
-          SELECT
-        	COUNT(*) AS total
-          FROM
-        	steam
-          WHERE
-        	developer IS NOT NULL AND
-        	developer <> ''
-        )
-        
+
         SELECT
           developer,
-          COUNT(*) AS conteo_de_juegos,
-          (COUNT(*) * 100.0) / (SELECT total FROM TotalJuegos) AS porcentaje
+          COUNT(*) AS conteo_de_juegos
         FROM
           steam
         WHERE
@@ -77,7 +68,36 @@ def get_data_1():
     data_dict = {
          'Developer': [row[0] for row in data],
          'N_Games': [row[1] for row in data],
-         'P_Steam_games': [row[2] for row in data]
+     }
+
+    return jsonify(data_dict)
+
+@app.route('/data2')
+@cross_origin()
+def get_data_2():
+
+    query = """
+        SELECT
+          publisher,
+          COUNT(*) AS conteo_de_juegos
+        FROM
+          steam
+        WHERE
+          publisher IS NOT NULL AND
+          publisher <> ''
+        GROUP BY
+          publisher
+        ORDER BY
+          conteo_de_juegos DESC
+        LIMIT
+          10;
+    """
+
+    data = exec_query(query)
+
+    data_dict = {
+         'Publisher': [row[0] for row in data],
+         'N_Games': [row[1] for row in data],
      }
 
     return jsonify(data_dict)
