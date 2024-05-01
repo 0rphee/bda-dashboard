@@ -102,6 +102,31 @@ def get_data_2():
 
     return jsonify(data_dict)
 
+@app.route('/data3')
+@cross_origin()
+def get_data_3():
+
+    query = """
+
+        SELECT developer, SUM(positive_ratings) as Total_Ratings, AVG(positive_ratings / (negative_ratings + positive_ratings)) * 100 AS positive_ratings_percentage
+        FROM steam
+        WHERE
+          (positive_ratings + negative_ratings) > 0
+        GROUP BY developer
+        ORDER BY Total_Ratings DESC
+        LIMIT 10;
+    """
+
+    data = exec_query(query)
+
+    data_dict = {
+         'Developer': [row[0] for row in data],
+         'Total_ratings': [row[1] for row in data],
+         'Positive_rating_percentage': [row[2] for row in data],
+     }
+
+    return jsonify(data_dict)
+
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=8000, debug=True)
