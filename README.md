@@ -19,7 +19,14 @@ git submodule init
 git submodule update --remote
 ```
 
-Y descargar el archivo `steam_db.sql` y colocarlo en `data/`, de <https://drive.usercontent.google.com/download?id=1kR9uIj7tv9BY2RxThL3KElbpb3vQ9Oxg&export=download&authuser=1>
+Se descarga la base de datos:
+
+```sh
+# Se ejecuta esto en la misma terminal, si no funciona seguir el paso siguiente
+curl 'https://drive.usercontent.google.com/download?id=1IxScbVE5OSBtIDU5xVg_v9G-6d88SFZe&confirm=xxx' -o data/steam_db.sql
+```
+
+**Si el comando anterior no funciona**, se descarga el archivo `steam_db.sql` y colocarlo en `data/`, de <https://drive.usercontent.google.com/download?id=1IxScbVE5OSBtIDU5xVg_v9G-6d88SFZe&confirm=xxx>
 
 Una vez hecho esto, **se abre la aplicación de Docker** y se ejecuta esto en la terminal:
 
