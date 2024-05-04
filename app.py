@@ -127,6 +127,28 @@ def get_data_3():
 
     return jsonify(data_dict)
 
+@app.route('/data8')
+@cross_origin()
+def get_data_8():
+
+    query = """
+        SELECT appid, name, avg_owners, price
+        FROM steam
+        ORDER BY avg_owners DESC
+        LIMIT 100;
+    """
+
+    data = exec_query(query)
+
+    data_dict = {
+         'appid': [row[0] for row in data],
+         'game': [row[1] for row in data],
+         'avg_owners': [row[2] for row in data],
+         'price': [row[3] for row in data],
+     }
+
+    return jsonify(data_dict)
+
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=8000, debug=True)
