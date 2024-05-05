@@ -19,7 +19,7 @@ def exec_query(query: str):
         database="steam_db"
     )
     cursor = conn.cursor()
-    cursor.execute(query, multi=True)
+    cursor.execute(query)
     data = cursor.fetchall()
     conn.close()
     return data
