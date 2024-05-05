@@ -41,6 +41,7 @@ def get_data():
 
     return jsonify(data_dict)
 
+# 1: Gráfica de Barras: porcentaje de los juegos que tienen los developers.
 @app.route('/data1')
 @cross_origin()
 def get_data_1():
@@ -72,6 +73,7 @@ def get_data_1():
 
     return jsonify(data_dict)
 
+# 2: Gráfica de Barras Porcentaje de los juegos que tienen los publishers.
 @app.route('/data2')
 @cross_origin()
 def get_data_2():
@@ -102,6 +104,7 @@ def get_data_2():
 
     return jsonify(data_dict)
 
+# 3: Tabla: Porcentaje de los ratings positivos por juego que más ratings tienen.
 @app.route('/data3')
 @cross_origin()
 def get_data_3():
@@ -127,7 +130,8 @@ def get_data_3():
 
     return jsonify(data_dict)
 
-@app.route('/data8')
+# 6: Bubble Chart: se entrega el top 100 de juegos con más avg_owners y se les acompaña con la tabla de precio para ver si hay una relación existente entre el precio y la cantidad de usuarios.
+@app.route('/data6')
 @cross_origin()
 def get_data_8():
 
@@ -143,6 +147,29 @@ def get_data_8():
     data_dict = map(lambda row: {"appid": row[0], "name": row[1], "avg_owners": row[2], "price": row[3], "positive_ratings": row[4]}, data)
     return jsonify(list(data_dict))
 
+
+# 7: Se seleccionan los juegos con más average playtime y se compara con la cantidad de owners que tiene cada juego 
+@app.route('/data7')
+@cross_origin()
+def get_data_7():
+
+    query = """
+        SELECT
+            appid, 
+            name,
+            average_playtime,
+            avg_owners
+        FROM
+            steam
+        ORDER BY
+            average_playtime DESC
+        LIMIT 10 
+    """
+
+    data = exec_query(query)
+
+    data_dict = map(lambda row: {"appid": row[0], "name": row[1], "average_playtime": row[2], "avg_owners": row[3], }, data)
+    return jsonify(list(data_dict))
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=8000, debug=True)
