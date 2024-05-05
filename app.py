@@ -135,7 +135,7 @@ def get_data_3():
 def get_data_8():
 
     query = """
-        SELECT appid, name, avg_owners, price, (positive_ratings / (negative_ratings + positive_ratings)) * 100 
+        SELECT appid, name, avg_owners, price, (positive_ratings / (negative_ratings + positive_ratings)) * 100 AS percentage_positive_ragins
         FROM steam
         ORDER BY avg_owners DESC
         LIMIT 100;
