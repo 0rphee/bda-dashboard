@@ -132,7 +132,7 @@ def get_data_3():
 def get_data_8():
 
     query = """
-        SELECT appid, name, avg_owners, price
+        SELECT appid, name, avg_owners, price, positive_ratings
         FROM steam
         ORDER BY avg_owners DESC
         LIMIT 100;
@@ -140,14 +140,8 @@ def get_data_8():
 
     data = exec_query(query)
 
-    data_dict = {
-         'appid': [row[0] for row in data],
-         'game': [row[1] for row in data],
-         'avg_owners': [row[2] for row in data],
-         'price': [row[3] for row in data],
-     }
-
-    return jsonify(data_dict)
+    data_dict = map(lambda row: {"appid": row[0], "name": row[1], "avg_owners": row[2], "price": row[3], "positive_ratings": row[4]}, data)
+    return jsonify(list(data_dict))
 
 
 if __name__ == '__main__':
