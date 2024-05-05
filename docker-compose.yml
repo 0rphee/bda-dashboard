@@ -4,7 +4,7 @@ services:
   web:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.python
     restart: always
     ports:
       - "8000:8000"
@@ -36,3 +36,17 @@ services:
       - "8080:80"
     # environment: 
     #   PMA_ARBITRARY: 1
+
+  frontend-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.npm-dev
+    restart: always
+    ports: 
+      - "3000:3000"
+    depends_on: 
+      - web
+    volumes:
+      - ./proy-bda-frontend:/app/proy-bda-frontend  # Mount frontend code for development
+      - /app/proy-bda-frontend/node_modules/
+

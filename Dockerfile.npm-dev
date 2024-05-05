@@ -1,0 +1,20 @@
+# Use official Python 3.11 image as base
+FROM node:22-alpine
+
+# Set working directory in the container
+WORKDIR /app
+
+# Copy Node.js dependencies
+COPY proy-bda-frontend/package.json .
+
+# Navigate to the frontend directory and install npm dependencies
+WORKDIR /app/proy-bda-frontend
+RUN npm install
+
+# Copy the rest of the application code to the container
+COPY ./proy-bda-frontend /app/proy-bda-frontend
+
+EXPOSE 3000
+
+# Command to run the application
+CMD ["npm", "start", "--", "--host"]
