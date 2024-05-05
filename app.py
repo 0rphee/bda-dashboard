@@ -162,7 +162,7 @@ def get_data_7():
             steam
         ORDER BY
             average_playtime DESC
-        LIMIT 10 
+        LIMIT 100 
     """
 
     data = exec_query(query)
