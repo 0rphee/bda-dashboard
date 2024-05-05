@@ -19,11 +19,10 @@ def exec_query(query: str):
         database="steam_db"
     )
     cursor = conn.cursor()
-    cursor.execute(query)
+    cursor.execute(query, multi=True)
     data = cursor.fetchall()
     conn.close()
     return data
-
 
 @app.route('/', defaults={'requested_path': 'index.html'})
 @app.route('/<path:requested_path>')

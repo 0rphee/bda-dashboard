@@ -14,7 +14,8 @@ services:
       watch:
         - action: rebuild
           path: .
-          target: /app
+          ignore:
+            - proy-bda-frontend/
   db:
     image: mysql:8.3
     restart: always
@@ -44,8 +45,6 @@ services:
     restart: always
     ports: 
       - "3000:3000"
-    depends_on: 
-      - web
     volumes:
       - ./proy-bda-frontend:/app/proy-bda-frontend  # Mount frontend code for development
       - /app/proy-bda-frontend/node_modules/
