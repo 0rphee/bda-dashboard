@@ -96,6 +96,7 @@ def get_data_2():
 
 
 # 3: Tabla: Porcentaje de los ratings positivos por juego que más ratings tienen.
+# No esta igual el query que el del docs
 @app.route("/data3")
 @cross_origin()
 def get_data_3():
@@ -120,6 +121,7 @@ def get_data_3():
     }
 
     return jsonify(data_dict)
+
 
 # 4: selecciona todos los géneros existentes de la tabla de steam y crea otra columna en la que dice cuantas veces sale un género en específico
 @app.route("/data4")
@@ -150,6 +152,50 @@ def get_data_4():
         "genre": [row[0] for row in data],
         "genre_count": [row[1] for row in data],
         "avg_owners_per_genre": [row[2] for row in data],
+    }
+
+    return jsonify(data_dict)
+
+
+# 5:
+@app.route("/data5")
+@cross_origin()
+def get_data_5():
+
+    query = """
+        WITH separated_platforms AS (
+            SELECT
+                appid,
+                avg_owners,
+                SUBSTRING_INDEX(SUBSTRING_INDEX(platforms, ';', n.n), ';', -1) AS platform
+            FROM
+                steam
+            JOIN
+                (SELECT 1 AS n UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9 UNION ALL SELECT 10) AS n
+            ON
+                n.n <= LENGTH(platforms) - LENGTH(REPLACE(platforms, ';', '')) + 1
+        )
+
+        SELECT
+            platform,
+            COUNT(*) AS platform_count,
+            SUM(avg_owners) AS total_owners
+        FROM
+            separated_platforms
+        WHERE
+            platform != ''
+        GROUP BY
+            platform
+        ORDER BY
+            platform_count DESC
+    """
+
+    data = exec_query(query)
+
+    data_dict = {
+        "platform": [row[0] for row in data],
+        "platform_count": [row[1] for row in data],
+        "total_owners": [row[2] for row in data],
     }
 
     return jsonify(data_dict)
@@ -218,46 +264,10 @@ if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8000, debug=True)
 
 
-@app.route("/data11")
+# 8:
+@app.route("/data8")
 @cross_origin()
-def get_data_11():
-    query = """
-        SELECT c.Category, c.Category_Count, c.avg_owners_per_cat
-        FROM (
-            SELECT
-                SUBSTRING_INDEX(SUBSTRING_INDEX(categories, ';', numbers.n), ';', -1) AS Category,
-                COUNT(*) AS Category_Count,
-                AVG(avg_owners) AS avg_owners_per_cat
-            FROM
-                steam
-            JOIN (
-                SELECT
-                    (a.N + b.N * 10 + 1) AS n
-                FROM
-                    (SELECT 0 AS N UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) AS a
-                    CROSS JOIN (SELECT 0 AS N UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) AS b
-            ) AS numbers ON CHAR_LENGTH(categories) - CHAR_LENGTH(REPLACE(categories, ';', '')) >= numbers.n - 1
-            GROUP BY Category
-            ORDER BY Category_Count DESC, avg_owners_per_cat DESC
-        ) AS c
-        WHERE c.Category IN ('Single-player', 'Multi-player', 'Online Multi-Player', 'Shared/Split Screen', 'Co-op', 'Local Multi-Player', 'Cross-Platform Multiplayer', 'Online Co-op', 'Local Co-op')
-        LIMIT 4
-    """
-
-    data = exec_query(query)
-
-    data_dict = []
-    for row in data:
-        data_dict.append(
-            {"Category": row[0], "Category_Count": row[1], "avg_owners_per_cat": row[2]}
-        )
-
-    return jsonify(data_dict)
-
-
-@app.route("/data12")
-@cross_origin()
-def get_data_12():
+def get_data_8():
     query = """
         SELECT 
             developer, 
@@ -299,3 +309,105 @@ def get_data_12():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8000, debug=True)
+
+
+# 9:
+@app.route("/data9")
+@cross_origin()
+def get_data_9():
+
+    query = """
+        SELECT
+            SUBSTRING_INDEX(SUBSTRING_INDEX(categories, ';', numbers.n), ';', -1) AS Category,
+            COUNT(*) AS Category_Count,
+            AVG(avg_owners) AS avg_owners_per_cat
+        FROM
+            steam
+        JOIN (
+            SELECT
+                (a.N + b.N * 10 + 1) AS n
+            FROM
+                (SELECT 0 AS N UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) AS a
+                CROSS JOIN (SELECT 0 AS N UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) AS b
+        ) AS numbers ON CHAR_LENGTH(categories) - CHAR_LENGTH(REPLACE(categories, ';', '')) >= numbers.n - 1
+        GROUP BY Category
+        ORDER BY Category_Count DESC, avg_owners_per_cat DESC;
+    """
+
+    data = exec_query(query)
+
+    data_dict = {
+        "category": [row[0] for row in data],
+        "category_count": [row[1] for row in data],
+        "avg_owners_per_category": [row[2] for row in data],
+    }
+
+    return jsonify(data_dict)
+
+
+@app.route("/data10")
+@cross_origin()
+def get_data_10():
+
+    query = """
+        SELECT 
+            developer, 
+            SUM(CASE WHEN MATCH(categories) AGAINST("Single-player")>0 THEN price*avg_owners ELSE 0 END) AS SinglePlayer, 
+            SUM(CASE WHEN MATCH(categories) AGAINST("Multi-player")>0 THEN price*avg_owners ELSE 0 END) AS MultiPlayer , 
+            SUM(CASE WHEN MATCH(categories) AGAINST("Co-op")>0 THEN price*avg_owners ELSE 0 END) AS Coop,
+            SUM(CASE WHEN MATCH(categories) AGAINST("Cross-Platform")>0 THEN price*avg_owners ELSE 0 END) AS CrossPlatform,
+            SUM(CASE WHEN MATCH(categories) AGAINST("support")>0 THEN price*avg_owners ELSE 0 END) AS ControllerSupport
+        FROM steam 
+        WHERE developer IN ("Valve","CAPCOM Co., Ltd.","IO Interactive A/S", "Studio Wildcard;Instinct Games;Efecto Studios;Virtual Basement LLC","Ubisoft Montreal","Bethesda Game Studios","Paradox Development Studio","PUBG Corporation", "Choice of Games")
+        GROUP BY developer;
+    """
+
+    data = exec_query(query)
+
+    data_dict = {
+        "developer": [row[0] for row in data],
+        "single_player": [row[1] for row in data],
+        "multi_player": [row[2] for row in data],
+        "coop": [row[3] for row in data],
+        "cross_platform": [row[4] for row in data],
+        "controller_support": [row[5] for row in data],
+    }
+
+    return jsonify(data_dict)
+
+
+@app.route("/data11")
+@cross_origin()
+def get_data_11():
+    query = """
+        SELECT c.Category, c.Category_Count, c.avg_owners_per_cat
+        FROM (
+            SELECT
+                SUBSTRING_INDEX(SUBSTRING_INDEX(categories, ';', numbers.n), ';', -1) AS Category,
+                COUNT(*) AS Category_Count,
+                AVG(avg_owners) AS avg_owners_per_cat
+            FROM
+                steam
+            JOIN (
+                SELECT
+                    (a.N + b.N * 10 + 1) AS n
+                FROM
+                    (SELECT 0 AS N UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) AS a
+                    CROSS JOIN (SELECT 0 AS N UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) AS b
+            ) AS numbers ON CHAR_LENGTH(categories) - CHAR_LENGTH(REPLACE(categories, ';', '')) >= numbers.n - 1
+            GROUP BY Category
+            ORDER BY Category_Count DESC, avg_owners_per_cat DESC
+        ) AS c
+        WHERE c.Category IN ('Single-player', 'Multi-player', 'Online Multi-Player', 'Shared/Split Screen', 'Co-op', 'Local Multi-Player', 'Cross-Platform Multiplayer', 'Online Co-op', 'Local Co-op')
+        LIMIT 4
+    """
+
+    data = exec_query(query)
+
+    data_dict = []
+    for row in data:
+        data_dict.append(
+            {"Category": row[0], "Category_Count": row[1], "avg_owners_per_cat": row[2]}
+        )
+
+    return jsonify(data_dict)
