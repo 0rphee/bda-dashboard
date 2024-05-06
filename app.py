@@ -28,21 +28,6 @@ def index(requested_path):
     return send_from_directory("proy-bda-frontend/build", requested_path)
 
 
-@app.route("/data")
-@cross_origin()
-def get_data():
-    data = exec_query(
-        'SELECT developer, COUNT(developer) as Count FROM steam WHERE developer != "" GROUP BY developer ORDER BY Count DESC LIMIT 100;'
-    )
-
-    data_dict = {
-        "Developer": [row[0] for row in data],
-        "Count": [row[1] for row in data],
-    }
-
-    return jsonify(data_dict)
-
-
 # 1: Gráfica de Barras: porcentaje de los juegos que tienen los developers.
 @app.route("/data1")
 @cross_origin()
@@ -57,7 +42,8 @@ def get_data_1():
           steam
         WHERE
           developer IS NOT NULL AND
-          developer <> ''
+          developer != "" AND
+          developer != "nan"
         GROUP BY
           developer
         ORDER BY
@@ -89,7 +75,8 @@ def get_data_2():
           steam
         WHERE
           publisher IS NOT NULL AND
-          publisher <> ''
+          publisher != "" AND
+          developer != "nan"
         GROUP BY
           publisher
         ORDER BY
@@ -130,6 +117,39 @@ def get_data_3():
         "Developer": [row[0] for row in data],
         "Total_ratings": [row[1] for row in data],
         "Positive_rating_percentage": [row[2] for row in data],
+    }
+
+    return jsonify(data_dict)
+
+# 4: selecciona todos los géneros existentes de la tabla de steam y crea otra columna en la que dice cuantas veces sale un género en específico
+@app.route("/data4")
+@cross_origin()
+def get_data_4():
+
+    query = """
+        SELECT
+            SUBSTRING_INDEX(SUBSTRING_INDEX(genres, ';', numbers.n), ';', -1) AS Genre,
+            COUNT(*) AS Genre_Count,
+            AVG(avg_owners) AS Avg_Owners_Per_Genre
+        FROM
+            steam
+        JOIN (
+            SELECT
+           	 (a.N + b.N * 10 + 1) AS n
+            FROM
+           	 (SELECT 0 AS N UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) AS a
+           	 CROSS JOIN (SELECT 0 AS N UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) AS b
+        ) AS numbers ON CHAR_LENGTH(genres) - CHAR_LENGTH(REPLACE(genres, ';', '')) >= numbers.n - 1
+        GROUP BY Genre
+        ORDER BY Genre_Count DESC;
+    """
+
+    data = exec_query(query)
+
+    data_dict = {
+        "genre": [row[0] for row in data],
+        "genre_count": [row[1] for row in data],
+        "avg_owners_per_genre": [row[2] for row in data],
     }
 
     return jsonify(data_dict)
@@ -233,10 +253,6 @@ def get_data_11():
         )
 
     return jsonify(data_dict)
-
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8000, debug=True)
 
 
 @app.route("/data12")
