@@ -28,21 +28,6 @@ def index(requested_path):
     return send_from_directory("proy-bda-frontend/build", requested_path)
 
 
-@app.route("/data")
-@cross_origin()
-def get_data():
-    data = exec_query(
-        'SELECT developer, COUNT(developer) as Count FROM steam WHERE developer != "" GROUP BY developer ORDER BY Count DESC LIMIT 100;'
-    )
-
-    data_dict = {
-        "Developer": [row[0] for row in data],
-        "Count": [row[1] for row in data],
-    }
-
-    return jsonify(data_dict)
-
-
 # 1: Gráfica de Barras: porcentaje de los juegos que tienen los developers.
 @app.route("/data1")
 @cross_origin()
@@ -57,7 +42,8 @@ def get_data_1():
           steam
         WHERE
           developer IS NOT NULL AND
-          developer <> ''
+          developer != "" AND
+          developer != "nan"
         GROUP BY
           developer
         ORDER BY
@@ -89,7 +75,8 @@ def get_data_2():
           steam
         WHERE
           publisher IS NOT NULL AND
-          publisher <> ''
+          publisher != "" AND
+          developer != "nan"
         GROUP BY
           publisher
         ORDER BY
@@ -233,10 +220,6 @@ def get_data_11():
         )
 
     return jsonify(data_dict)
-
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8000, debug=True)
 
 
 @app.route("/data12")
