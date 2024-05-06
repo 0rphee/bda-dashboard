@@ -121,6 +121,39 @@ def get_data_3():
 
     return jsonify(data_dict)
 
+# 4: selecciona todos los géneros existentes de la tabla de steam y crea otra columna en la que dice cuantas veces sale un género en específico
+@app.route("/data4")
+@cross_origin()
+def get_data_4():
+
+    query = """
+        SELECT
+            SUBSTRING_INDEX(SUBSTRING_INDEX(genres, ';', numbers.n), ';', -1) AS Genre,
+            COUNT(*) AS Genre_Count,
+            AVG(avg_owners) AS Avg_Owners_Per_Genre
+        FROM
+            steam
+        JOIN (
+            SELECT
+           	 (a.N + b.N * 10 + 1) AS n
+            FROM
+           	 (SELECT 0 AS N UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) AS a
+           	 CROSS JOIN (SELECT 0 AS N UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) AS b
+        ) AS numbers ON CHAR_LENGTH(genres) - CHAR_LENGTH(REPLACE(genres, ';', '')) >= numbers.n - 1
+        GROUP BY Genre
+        ORDER BY Genre_Count DESC;
+    """
+
+    data = exec_query(query)
+
+    data_dict = {
+        "genre": [row[0] for row in data],
+        "genre_count": [row[1] for row in data],
+        "avg_owners_per_genre": [row[2] for row in data],
+    }
+
+    return jsonify(data_dict)
+
 
 # 6: Bubble Chart: se entrega el top 100 de juegos con más avg_owners y se les acompaña con la tabla de precio para ver si hay una relación existente entre el precio y la cantidad de usuarios.
 @app.route("/data6")
