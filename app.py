@@ -307,10 +307,6 @@ def get_data_8():
     return jsonify(data_dict)
 
 
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8000, debug=True)
-
-
 # 9:
 @app.route("/data9")
 @cross_origin()
@@ -399,7 +395,6 @@ def get_data_11():
             ORDER BY Category_Count DESC, avg_owners_per_cat DESC
         ) AS c
         WHERE c.Category IN ('Single-player', 'Multi-player', 'Online Multi-Player', 'Shared/Split Screen', 'Co-op', 'Local Multi-Player', 'Cross-Platform Multiplayer', 'Online Co-op', 'Local Co-op')
-        LIMIT 4
     """
 
     data = exec_query(query)
@@ -411,3 +406,8 @@ def get_data_11():
         )
 
     return jsonify(data_dict)
+
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=8000, debug=True)
+
