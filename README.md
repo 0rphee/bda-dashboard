@@ -4,6 +4,13 @@
  Se necesita Docker: <https://docs.docker.com/get-docker/>
 > y Git <https://git-scm.com/downloads>
 
+## Preview
+
+![preview-1](preview/preview-1.png)
+
+![preview-2](preview/preview-2.png)
+
+
 ## Lanzar el proyecto en Docker
 
 Primero se clona el proyecto:
@@ -23,6 +30,7 @@ Se descarga la base de datos:
 
 ```sh
 # Se ejecuta esto en la misma terminal, si no funciona seguir el paso siguiente
+mkdir data
 curl 'https://drive.usercontent.google.com/download?id=1IxScbVE5OSBtIDU5xVg_v9G-6d88SFZe&confirm=xxx' -o data/steam_db.sql
 ```
 
