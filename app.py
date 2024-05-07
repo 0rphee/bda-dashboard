@@ -407,6 +407,37 @@ def get_data_11():
 
     return jsonify(data_dict)
 
+@app.route("/data20")
+@cross_origin()
+def get_data_20():
+
+    query = """
+        SELECT
+            SUBSTRING_INDEX(SUBSTRING_INDEX(genres, ';', numbers.n), ';', -1) AS Genre,
+            AVG(avg_owners * price) AS Avg_Estimated_Earnings_Per_Game
+        FROM
+            steam
+        JOIN (
+            SELECT
+           	 (a.N + b.N * 10 + 1) AS n
+            FROM
+           	 (SELECT 0 AS N UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) AS a
+           	 CROSS JOIN (SELECT 0 AS N UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) AS b
+        ) AS numbers ON CHAR_LENGTH(genres) - CHAR_LENGTH(REPLACE(genres, ';', '')) >= numbers.n - 1
+        GROUP BY Genre
+        ORDER BY Avg_Estimated_Earnings_Per_Game DESC;
+    """
+
+    data = exec_query(query)
+
+    data_dict = {
+        "genre": [row[0] for row in data],
+        "avg_estimated_earnings_per_game": [row[1] for row in data],
+    }
+
+    return jsonify(data_dict)
+
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8000, debug=True)
