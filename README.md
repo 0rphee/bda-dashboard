@@ -4,6 +4,8 @@
  Se necesita Docker: <https://docs.docker.com/get-docker/>
 > y Git <https://git-scm.com/downloads>
 
+Proyecto de bases de datos avanzadas.
+
 ## Preview
 
 ![preview-1](preview/preview-1.png)
